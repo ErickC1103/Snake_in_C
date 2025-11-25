@@ -78,8 +78,8 @@ void init_game()//initializes content in game
     max_x = COLS;
     snake_len = INITIAL_LENGTH;//inittialize snake length
     //initializing sides of field
-    field_top = 1;
-    field_left = 1;
+    field_top = 1;//top field
+    field_left = 1;//left field
     field_bottom = max_y-4;
     field_right = max_x;
     int start_x = max_x / 2;
