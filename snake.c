@@ -18,6 +18,7 @@ int snake_len;
 struct Point food;
 int score = 0;
 int high_score = 0;
+int top_score = 0;
 int field_top,field_bottom,field_left,field_right;
 int delay = START_TIME_DELAY;
 int cursor_x = 10;
@@ -28,7 +29,9 @@ int cursor_y = 5;
 void draw();
 void init_game();
 void moveSnake();
+int collides_with_wall();
 int collides_with_snake(int,int);
+int collides_with_self();
 void place_food();
 void createSnakeTitle(int,int);
 void throw_title_screen();
@@ -91,10 +94,9 @@ void draw()
     }
     attroff(COLOR_PAIR(1));
   //draw the score
-    int score_pos_y = field_bottom + 1;
-    int score_pos_x = field_left;
-    mvprintw(score_pos_y,score_pos_x,"Score = %d",score);
-    mvprintw(score_pos_y + 1,score_pos_x,"High score = %d",high_score);
+   
+    mvprintw(field_bottom + 1,field_left,"Score = %d  HighScore = %d Top score = %d ",score,high_score,top_score);
+    mvprintw(field_bottom + 2,field_left,"Controls: arrow keys | q to quit");
    // for drawing the snake
     init_pair(2,COLOR_GREEN,-1);//color for the head
     init_color(11,0,400,0);//initializing color for the body
@@ -120,11 +122,21 @@ void place_food()
 {
     int x,y;
     do{
-        x = (rand() % (field_right - field_left - 1)) + field_left + 4;
+        x = (rand() % (field_right - field_left - 1)) + field_left + 1;
         y = (rand() % (field_bottom - field_top - 1)) + field_top + 1;      
     } while(collides_with_snake(x,y));
     food.x = x;
     food.y = y;
+}
+
+int collides_with_wall()
+{
+    if(snake[0].x <= field_left || snake[0].x >= field_right ||
+    snake[0].y <= field_top || snake[0].y >= field_bottom)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 
@@ -140,14 +152,26 @@ int collides_with_snake(int x,int y)
     }
     return 0;
 }
+int collides_with_self()
+{
+    for(int i = 1; i < snake_len; ++i)
+    {
+        if(snake[0].x == snake[i].x && snake[0].y == snake[i].y)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
 void init_game()//initializes content in game
 {
     
-    throw_title_screen();
+    
     int max_y, max_x;
     max_y = LINES;
     max_x = COLS;
     snake_len = INITIAL_LENGTH;//inittialize snake length
+    top_score = COLS;
     //initializing sides of field
     field_top = 1;//top field
     field_left = 1;//left field
@@ -168,6 +192,7 @@ void init_game()//initializes content in game
     draw();
 
 }
+
 int main()
 {//start of main
    //int speed = 10;
@@ -179,6 +204,7 @@ int main()
     start_color();//allows color
     use_default_colors();//allows transparent backgrounds
     keypad(stdscr,TRUE);
+    throw_title_screen();
     init_game();
     nodelay(stdscr,TRUE);
 
@@ -199,17 +225,17 @@ int main()
             switch(key)
            {
             case KEY_UP:
-            direction = Up;
-            break;
+                if(direction != Down){direction = Up;}
+                break;
             case KEY_DOWN:
-            direction = Down;
-            break;
+                if(direction != Up){direction = Down;}
+                break;
             case KEY_LEFT:
-            direction = Left;
-            break;
+                if(direction != Right){direction = Left;}
+                break;
             case KEY_RIGHT:
-            direction = Right;
-            break;
+                if(direction != Left){direction = Right;}
+                break;
             default:
            }
         }
@@ -217,6 +243,32 @@ int main()
         moveSnake();
         draw();
         
+        //check for collision with wall
+        if(collides_with_wall())
+        {
+            
+            mvprintw(field_bottom + 2, field_left,"You hit a wall! Press any key to continue");
+            sleep(1);
+            nodelay(stdscr,FALSE);
+            getch();
+            nodelay(stdscr,TRUE);
+
+            init_game();
+            continue;
+        }
+        //checks for collision with self
+        if(collides_with_self())
+        {
+            sleep(1);
+            mvprintw(field_bottom + 2,field_left, "You ran into yourself! Press any key to continue   ");
+            nodelay(stdscr,FALSE);
+            getch();
+            nodelay(stdscr,TRUE);
+            init_game();
+            continue;
+        }
+
+
         //check for food 
         if(snake[0].x == food.x && snake[0].y == food.y)
         {
@@ -245,16 +297,20 @@ int main()
         
     }
     
-    
+    nodelay(stdscr,FALSE);
+    mvprintw(field_bottom + 2, field_left, "Thanks for playing! press any key to exit...");
+    getch();
     endwin();   
     return 0;
 }
 void throw_title_screen()
 {
+    createSnakeTitle(cursor_x,cursor_y);
+    mvprintw(cursor_y,cursor_x,"Press Enter to Play");
     int key;
     do
     {
-       createSnakeTitle(cursor_x,cursor_y);
+       
     }
     while((key = getch()) != '\n');
 }
@@ -425,40 +481,7 @@ int drawN()
     goUp(5);
     return 5;  
 }
-void drawSnakeHead()
-{
-  //initializing the sides
-  int side_left = cursor_x;//left side
-  int side_right = cursor_x + 15;//right side
-  int bottom = cursor_y + 7;
-  int top = cursor_y;
-  int wlx = side_left;//determined x value for the left wing
-  int wrx = side_right;//determined x value for the right wing
-  int starting_neck_y = bottom;
-  for(int y = cursor_y; y < cursor_y + 5; ++y)
-  {
-    for(int j = 0 ; j < 4;++j)
-    {
-        mvprintw(y+j,wlx,"o");
-        mvprintw(y+j,wrx,"o");
 
-    }
-    ++wlx;
-    --wrx;
-  }
-  //mvprintw(bottom,wlx,"o");
-  for(int y = 0; y < top; ++y)
-  {
-    for(int x = 0; x < 4; ++x)
-    {
-        mvprintw(bottom - y,wlx + 1 + x,"o");
-    }
-  }
-  mvprintw(top,side_left + 1,"o");
-  
-
-  refresh();
-}
 void createSnakeTitle(int x, int y)
 {   
     int current_x = x;
