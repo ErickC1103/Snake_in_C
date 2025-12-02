@@ -1,7 +1,11 @@
 # Snake_in_C
 this is a group project for creating the game snake on c in the terminal
 
-There are sections that have been worked on in the game such as:
+SNAKE
+
+this is our official snake game programmed in c using the curses library and much more. it features a colored simulation of the original snake game. Unlike the original, there is a top score players can reach in order to beat the game.
+
+There are various sections that have been worked on in the game such as:
 
 Border: the snake game will have a broder that would span from the outermost edges of the terminal - Erick
 
@@ -17,7 +21,7 @@ Food Placement: the food the snake eats to grow is plastered around the inner bo
 
 Score board: the game will keep track of the score of the current round as well as the highest score of the rounds the user played. There is also a top score that would finish the game if reached by the user. -Erick 
 
-Game over screen: the game would show a gmae over screen explaining the reason of game over, the scores and if the player want to quit or continue
+Game over screen: the game would show a game over screen explaining the reason of game over, the scores and if the player want to quit or continue -Tyris
 
 
 
