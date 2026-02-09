@@ -5,6 +5,8 @@ SNAKE
 
 this is our official snake game programmed in c using the curses library and much more. it features a colored simulation of the original snake game. Unlike the original, there is a top score players can reach in order to beat the game.
 
+Game objective: A snake starts in the inner center of a rectangular border along with one drop of food place anywhere inside the space. The players task is to maneuver the snake towards the food to eat it without touching the border or the snake's tail. for each time you eat the food, the snake's tail grows longer and the snake gets faster. The player will have to keep going until they reach the top score.  
+
 There are various sections that have been worked on in the game such as:
 
 Border: the snake game will have a broder that would span from the outermost edges of the terminal - Erick
